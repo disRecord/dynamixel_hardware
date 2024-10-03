@@ -72,13 +72,12 @@ CallbackReturn DynamixelHardware::on_init(const hardware_interface::HardwareInfo
     RCLCPP_INFO(rclcpp::get_logger(kDynamixelHardware), "joint_id %d: %d", i, joint_ids_[i]);
   }
 
-  if (
-    info_.hardware_parameters.find("use_dummy") != info_.hardware_parameters.end() &&
-    info_.hardware_parameters.at("use_dummy") == "true")
-  {
-    use_dummy_ = true;
-    RCLCPP_INFO(rclcpp::get_logger(kDynamixelHardware), "dummy mode");
-    return CallbackReturn::SUCCESS;
+  if (auto dummy_it = info_.hardware_parameters.find("use_dummy"); dummy_it != info_.hardware_parameters.end()) {
+    if (dummy_it->second == "true" || dummy_it->second == "True") {
+      use_dummy_ = true;
+      RCLCPP_INFO(rclcpp::get_logger(kDynamixelHardware), "dummy mode");
+      return CallbackReturn::SUCCESS;
+    }
   }
 
   auto usb_port = info_.hardware_parameters.at("usb_port");
